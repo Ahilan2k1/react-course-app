@@ -3,14 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./index.css">
+    <title>Zyraa Jewellery Product Spreadsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .calculated {
+            background: #e7f3ff;
+            font-weight: 600;
+            color: #0066cc;
+        }
+        
+        .img-cell {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .info-box {
+            margin: 20px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+    </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <div class="container">
+        <div class="header">
+            <h1>🔷 Zyraa Jewellery Product Management</h1>
+            <p>Complete Product Pricing & Inventory System</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="addRow()">+ Add New Product</button>
+            <button class="btn btn-success" onclick="exportToCSV()">📥 Export to CSV</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAll()">Clear All Data</button>
+        </div>
+        
+        <div class="info-box">
+            <h3>How to Use:</h3>
+            <p>• Enter product details in white cells</p>
+            <p>• Blue cells (Total Fees, Profit, Retail Rate) auto-calculate</p>
+            <p>• Click "Add New Product" to add more rows</p>
+            <p>• Export to CSV to use in Google Sheets</p>
+        </div>
+        
+        <div class="table-container">
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Product ID</th>
+                        <th style="width: 100px;">Image</th>
+                        <th style="width: 150px;">Product Name</th>
+                        <th style="width: 120px;">Category</th>
+                        <th style="width: 100px;">Wholesale Rate (₹)</th>
+                        <th style="width: 90px;">Box Charge (₹)</th>
+                        <th style="width: 90px;">Postal Charge (₹)</th>
+                        <th style="width: 100px;">Package Charge (₹)</th>
+                        <th style="width: 100px;">Total Extra Fees (₹)</th>
+                        <th style="width: 100px;">Profit Margin (%)</th>
+                        <th style="width: 100px;">Profit Amount (₹)</th>
+                        <th style="width: 100px;">Retail Rate (₹)</th>
+                        <th style="width: 100px;">Min Rate (₹)</th>
+                        <th style="width: 100px;">Max Rate (₹)</th>
+                        <th style="width: 80px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <script src="./App.js"></script>
+    <script>
+        let products = [
+            {
+                id: 'ZYR001',
+                image: 'https://via.placeholder.com/60/FFD700/000000?text=Necklace',
+                name: 'Gold Plated Necklace Set',
+                category: 'Necklace',
+                wholesale: 500,
+                boxCharge: 20,
+                postalCharge: 50,
+                packageCharge: 10,
+                profitMargin: 30,
+                minRate: 650,
+                maxRate: 850
+            },
+            {
+                id: 'ZYR002',
+                image: 'https://via.placeholder.com/60/C0C0C0/000000?text=Earrings',
+                name: 'Silver Stud Earrings',
+                category: 'Earrings',
+                wholesale: 300,
+                boxCharge: 15,
+                postalCharge: 40,
+                packageCharge: 10,
+                profitMargin: 35,
+                minRate: 450,
+                maxRate: 550
+            },
+            {
+                id: 'ZYR003',
+                image: 'https://via.placeholder.com/60/FFD700/000000?text=Bangles',
+                name: 'Designer Bangles Set of 4',
+                category: 'Bangles',
+                wholesale: 800,
+                boxCharge: 25,
+                postalCharge: 60,
+                packageCharge: 15,
+                profitMargin: 28,
+                minRate: 1100,
+                maxRate: 1350
+            }
+        ];
+
+        const categories = ['Necklace', 'Earrings', 'Bangles', 'Rings', 'Bracelets', 'Anklets', 'Nose Pins', 'Maang Tikka', 'Sets'];
+
+        function calculateTotalFees(product) {
+            return product.boxCharge + product.postalCharge + product.packageCharge;
+        }
+
+        function calculateProfit(product) {
+            const totalCost = product.wholesale + calculateTotalFees(product);
+            return Math.round(totalCost * (product.profitMargin / 100));
+        }
+
+        function calculateRetailRate(product) {
+            return product.wholesale + calculateTotalFees(product) + calculateProfit(product);
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const totalFees = calculateTotalFees(product);
+                const profit = calculateProfit(product);
+                const retailRate = calculateRetailRate(product);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" value="${product.id}" onchange="updateProduct(${index}, 'id', this.value)"></td>
+                    <td><img src="${product.image}" class="img-cell" alt="Product"></td>
+                    <td><input type="text" value="${product.name}" onchange="updateProduct(${index}, 'name', this.value)"></td>
+                    <td>
+                        <select onchange="updateProduct(${index}, 'category', this.value)">
+                            ${categories.map(cat => `<option value="${cat}" ${product.category === cat ? 'selected' : ''}>${cat}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><input type="number" value="${product.wholesale}" onchange="updateProduct(${index}, 'wholesale', parseFloat(this.value))"></td>
+                    <td><input type="number" value="${product.boxCharge}" onchange="updateProduct(${index}, 'boxCharge', parseFloat(this.value))"></td>
+                    <td><input type="number" value="${product.postalCharge}" onchange="updateProduct(${index}, 'postalCharge', parseFloat(this.value))"></td>
+                    <td><input type="number" value="${product.packageCharge}" onchange="updateProduct(${index}, 'packageCharge', parseFloat(this.value))"></td>
+                    <td class="calculated">₹${totalFees}</td>
+                    <td><input type="number" value="${product.profitMargin}" onchange="updateProduct(${index}, 'profitMargin', parseFloat(this.value))">%</td>
+                    <td class="calculated">₹${profit}</td>
+                    <td class="calculated">₹${retailRate}</td>
+                    <td><input type="number" value="${product.minRate}" onchange="updateProduct(${index}, 'minRate', parseFloat(this.value))"></td>
+                    <td><input type="number" value="${product.maxRate}" onchange="updateProduct(${index}, 'maxRate', parseFloat(this.value))"></td>
+                    <td class="actions">
+                        <button class="btn btn-danger btn-sm" onclick="deleteRow(${index})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateProduct(index, field, value) {
+            products[index][field] = value;
+            renderTable();
+        }
+
+        function addRow() {
+            const newId = 'ZYR' + String(products.length + 1).padStart(3, '0');
+            products.push({
+                id: newId,
+                image: 'https://via.placeholder.com/60/CCCCCC/000000?text=New',
+                name: 'New Product',
+                category: 'Necklace',
+                wholesale: 0,
+                boxCharge: 20,
+                postalCharge: 50,
+                packageCharge: 10,
+                profitMargin: 30,
+                minRate: 0,
+                maxRate: 0
+            });
+            renderTable();
+        }
+
+        function deleteRow(index) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                products.splice(index, 1);
+                renderTable();
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                products = [];
+                renderTable();
+            }
+        }
+
+        function exportToCSV() {
+            let csv = 'Product ID,Image URL,Product Name,Category,Wholesale Rate,Box Charge,Postal Charge,Package Charge,Total Extra Fees,Profit Margin %,Profit Amount,Retail Rate,Min Rate,Max Rate\n';
+            
+            products.forEach(product => {
+                const totalFees = calculateTotalFees(product);
+                const profit = calculateProfit(product);
+                const retailRate = calculateRetailRate(product);
+                
+                csv += `${product.id},${product.image},${product.name},${product.category},${product.wholesale},${product.boxCharge},${product.postalCharge},${product.packageCharge},${totalFees},${product.profitMargin},${profit},${retailRate},${product.minRate},${product.maxRate}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'zyraa_jewellery_products.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        renderTable();
+    </script>
 </body>
 </html>

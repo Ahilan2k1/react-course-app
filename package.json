@@ -1,0 +1,31 @@
+{
+  "name": "namaste_react",
+  "version": "1.0.0",
+  "description": "React app",
+  "scripts": {
+    "test": "jest",
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ahilan2k1/react-course-app.git"
+  },
+  "keywords": [
+    "react",
+    "javascript"
+  ],
+  "author": "Ahilan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ahilan2k1/react-course-app/issues"
+  },
+  "homepage": "https://github.com/Ahilan2k1/react-course-app#readme",
+  "devDependencies": {
+    "parcel": "^2.16.1"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}
